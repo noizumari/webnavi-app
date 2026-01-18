@@ -421,7 +421,7 @@ function notifyM5Stick(sign) {
     
     // 文字列 "PREPARE" が来た場合は一旦無視するか、特定の数値（例: 99）として送る
     if (sign === "PREPARE") {
-        sendSignToM5(99); // 予告用
+        sendSignToM5(88); // 予告用
     } else {
         sendSignToM5(sign); // 通常の指示(0, 2, -2, 4)を送信
     }
