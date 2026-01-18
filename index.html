@@ -61,19 +61,27 @@
 
     <div id="map"></div>
 
+    <!-- 現在地へ戻るボタン (右下) -->
+    <button id="recenterBtn" onclick="enableAutoCenter()" style="position: absolute; bottom: 300px; right: 10px; z-index: 1000; padding: 10px; border-radius: 50%; width: 50px; height: 50px; background: white; border: 2px solid #ccc; font-size: 24px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+        ◎
+    </button>
+
     <div id="controls">
-        <input type="text" id="destInput" placeholder="目的地 (例: 東京駅, コンビニ)" value="">
-        <div id="searchResults"></div>
+        <!-- 検索UIエリア -->
+        <div id="search-ui">
+            <input type="text" id="destInput" placeholder="目的地 (例: 東京駅, コンビニ)" value="" style="width: 100%; box-sizing: border-box; margin-bottom: 5px;">
+            <div id="searchResults"></div>
 
-        <button onclick="handleSearchOrRoute()">検索 / ルート開始</button>
-        
-        <div id="searchResults"></div>
+            <button onclick="handleSearchOrRoute()" style="width: 100%; margin-bottom: 5px;">検索 / ルート開始</button>
+            
+            <button onclick="connectToM5()" style="width: 100%; background: #28a745;">M5Stick接続</button>
+        </div>
 
-        <button onclick="connectToM5()" style="background: #28a745; margin-bottom: 5px;">M5Stick接続</button>
-        
-        <button onclick="handleSearchOrRoute()">検索 / ルート開始</button>
-        
-        <div id="guidance">案内待機中...</div>
+        <!-- 案内UIエリア (案内中のみ表示) -->
+        <div id="navigation-ui" style="display: none;">
+            <div id="guidance" style="display: block; margin-bottom: 10px;">案内待機中...</div>
+            <button onclick="endNavigation()" style="width: 100%; background: #dc3545;">案内を終了</button>
+        </div>
     </div>
 
     <script src="script.js"></script>
