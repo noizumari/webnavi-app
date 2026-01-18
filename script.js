@@ -390,6 +390,7 @@ async function connectToM5() {
             optionalServices: [SERVICE_UUID]
         });
 
+        device.addEventListener('gattserverdisconnected', onDisconnected);
         const server = await device.gatt.connect();
         const service = await server.getPrimaryService(SERVICE_UUID);
         navigationCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
@@ -432,5 +433,20 @@ function notifyM5Stick(sign) {
         setTimeout(() => {
              guidance.style.backgroundColor = '#222';
         }, 1000);
+    }
+}
+// --- 忘れ物防止：切断時に実行される関数 ---
+function onDisconnected(event) {
+    const device = event.target;
+    console.log(`デバイス ${device.name} との接続が切れました。`);
+    
+    // スマホの画面に警告を出す
+    alert("【警告】M5Stickとの接続が切れました！\n忘れ物（傘など）はありませんか？");
+    
+    // 案内エリアの表示も更新して注意を促す
+    const guidance = document.getElementById('guidance');
+    if (guidance) {
+        guidance.innerText = "⚠️ M5との接続が切断されました";
+        guidance.style.backgroundColor = "red";
     }
 }
