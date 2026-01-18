@@ -219,6 +219,7 @@
 
                 // 最初の案内を表示
                 updateGuidanceDisplay();
+                sendSignToM5(100);
 
                 alert("ナビを開始します！実際に歩いて移動すると案内が切り替わります。");
                 console.log("全指示データ:", instructions);
@@ -366,16 +367,6 @@
         }
 
         // --- M5StickCへの通知関数 (Placeholder) ---
-        function notifyM5Stick(sign) {
-            console.log(`【M5StickC通知】Sign Code: ${sign}`);
-            // 将来ここに通信処理を書く (例: fetch('http://192.168.x.x/vibrate'))
-            
-            // デモ用にブラウザのアラートを一瞬出すか、色を変えるなど視覚フィードバック
-            document.getElementById('guidance').style.backgroundColor = 'red';
-            setTimeout(() => {
-                 document.getElementById('guidance').style.backgroundColor = '#222';
-            }, 1000);
-        }
 
         // --- 画面表示の更新 (初期表示用) ---
         function updateGuidanceDisplay() {
@@ -435,9 +426,11 @@ function notifyM5Stick(sign) {
         sendSignToM5(sign); // 通常の指示(0, 2, -2, 4)を送信
     }
     
-    // 視覚フィードバック
-    document.getElementById('guidance').style.backgroundColor = 'red';
-    setTimeout(() => {
-         document.getElementById('guidance').style.backgroundColor = '#222';
-    }, 1000);
+    const guidance = document.getElementById('guidance');
+    if (guidance) {
+        guidance.style.backgroundColor = 'red';
+        setTimeout(() => {
+             guidance.style.backgroundColor = '#222';
+        }, 1000);
+    }
 }
