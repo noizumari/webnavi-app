@@ -384,3 +384,60 @@
             const text = `次の指示: ${instruction.text}`;
             document.getElementById('guidance').innerText = text;
         }
+        // --- Bluetooth (BLE) 関連の変数と設定 ---
+const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"; // M5StickC Plus2と一致させる
+const CHARACTERISTIC_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+
+let navigationCharacteristic = null;
+
+// M5StickC Plus2に接続する関数
+async function connectToM5() {
+    try {
+        console.log("M5StickC Plus2を検索中...");
+        const device = await navigator.bluetooth.requestDevice({
+            filters: [{ name: "M5_Navi_Stick" }], // Arduino側の名前と一致させる
+            optionalServices: [SERVICE_UUID]
+        });
+
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService(SERVICE_UUID);
+        navigationCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+        alert("M5StickC Plus2に接続成功！");
+        document.getElementById('guidance').innerText = "M5接続済み: 案内待機中...";
+    } catch (error) {
+        console.error("Bluetooth接続エラー:", error);
+        alert("接続に失敗しました: " + error);
+    }
+}
+
+// M5StickC Plus2に数値を送る関数
+async function sendSignToM5(sign) {
+    if (!navigationCharacteristic) return;
+
+    try {
+        // GraphHopperのsign（0, 2, -2, 4など）を1バイトの整数として送信
+        const buffer = new Int8Array([sign]);
+        await navigationCharacteristic.writeValue(buffer);
+        console.log("M5に送信完了:", sign);
+    } catch (error) {
+        console.error("送信エラー:", error);
+    }
+}
+// --- M5StickCへの通知関数 (書き換え) ---
+function notifyM5Stick(sign) {
+    console.log(`【M5StickC通知】Sign Code: ${sign}`);
+    
+    // 文字列 "PREPARE" が来た場合は一旦無視するか、特定の数値（例: 99）として送る
+    if (sign === "PREPARE") {
+        sendSignToM5(99); // 予告用
+    } else {
+        sendSignToM5(sign); // 通常の指示(0, 2, -2, 4)を送信
+    }
+    
+    // 視覚フィードバック
+    document.getElementById('guidance').style.backgroundColor = 'red';
+    setTimeout(() => {
+         document.getElementById('guidance').style.backgroundColor = '#222';
+    }, 1000);
+}
